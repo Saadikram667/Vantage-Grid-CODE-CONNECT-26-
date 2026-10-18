@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-4xl mx-auto px-5 py-12">
+    <div class="mb-10">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">About Vantage Grid</h1>
+        <p class="text-slate-500 text-lg font-medium mt-2">Vantage Grid is a dynamic triage and route optimization system developed for the Regional Emergency Management Authority (REMA) to orchestrate flood rescue and support and help those in a rescue gap.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 text-slate-600 leading-relaxed text-sm md:text-base font-medium">
+        
+        <div class="card p-6 md:p-8 bg-white border border-slate-200 h-fit">
+            <h2 class="text-xl font-bold text-slate-800 mb-3">The Challenge of Urban Floods</h2>
+            <p class="mb-4">During rapid onset floods in dense urban areas like Karachi, conventional emergency dispatches fail to scale. Rescue requests flood in simultaneously, overwhelm existing response units, and leave commanders to guess where resources are needed most. Crucially, without a real-time predictive picture, units are often sent to stable, multi-story buildings while people with limited mobility or reliant on oxygen are trapped on lower ground.</p>
+            <p>Traditional map tools show where the water is, but not who is most vulnerable, how long they can wait, or where our crews would arrive too late.</p>
+        </div>
+
+        <div class="card p-6 md:p-8 bg-white border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-3">Our Methodology: Real-time Resource Decay</h2>
+            <p class="mb-4">Vantage Grid introduces a triage system built on survival clocks rather than queues. The moment a household registers and checks in, our algorithm evaluates and aggregates specific risk factor decay curves to construct their active survival duration: structural flood breach estimates, critical power outage effects on medical machinery, and isolation survival limits.</p>
+            <p class="mb-4">These clocks are constantly calibrated by real-time sensor updates and meteorological telemetry. Rather than dispatching on a first-come, first-served basis, Vantage Grid continually reroutes boats, amphibious trucks, and aerial assets to the most urgent time-to-decay gaps across the region.</p>
+            <p>Our goal is to identify "rescue gaps" early—homes where the fastest compatible rescue unit still won't arrive before their clock expires—giving command staff the foresight to stage assets early and issue directed evacuation alerts.</p>
+        </div>
+
+        <!-- New Crimson Nova Developer Card -->
+        <div class="card p-6 md:p-8 border border-slate-800 md:col-span-2 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden" style="background-color: #0a0a0a;">
+            <!-- Red ambient glow -->
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <img src="/static/crimson_nova.png" alt="Crimson Nova" class="w-24 h-24 rounded-full object-cover shadow-[0_0_20px_rgba(220,38,38,0.3)] border-2 border-red-600/50 shrink-0 relative z-10">
+            
+            <div class="text-center md:text-left relative z-10">
+                <div class="text-[10px] font-extrabold text-red-500 uppercase tracking-widest mb-1">System Architects</div>
+                <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Developed by Crimson Nova</h2>
+                <p class="text-slate-400 text-sm leading-relaxed mb-4 max-w-2xl">Vantage Grid was architected, designed, and developed by Crimson Nova. We specialize in high-performance triage engines, predictive routing algorithms, and critical infrastructure software designed to operate under extreme environmental constraints.</p>
+                <a href="#" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg text-sm transition-all shadow-md shadow-red-600/20">Contact the Developers</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-[1100px] mx-auto px-5 py-12"><p class="mono text-blue-600 text-sm font-bold uppercase tracking-wider">Rehearsal Planner</p>
+<h1 class="text-5xl md:text-7xl font-extrabold leading-[1.02] mt-3 mb-10 max-w-3xl text-slate-800 tracking-tight">What if the river reaches this level?</h1>
+<div class="grid lg:grid-cols-[280px_1fr] gap-6"><div class="card p-6 space-y-8 h-fit shadow-md">
+<label class="block text-sm font-bold text-slate-700">Crisis level: <span id="a1" class="mono text-blue-600">70</span>%<input id="level" class="mt-2" type="range" min="30" max="100" value="70"></label>
+<label class="block text-sm font-bold text-slate-700">Flood rise rate: <span id="a2" class="mono text-blue-600">1.2</span> m/hr<input id="rate" class="mt-2" type="range" min=".2" max="2.5" step=".1" value="1.2"></label>
+<label class="block text-sm font-bold text-slate-700">Power outage: <span id="a3" class="mono text-blue-600">60</span>%<input id="outage" class="mt-2" type="range" min="0" max="100" value="60"></label>
+<label class="block text-sm font-bold text-slate-700">Cellular outage: <span id="a5" class="mono text-blue-600">20</span>%<input id="cellular" class="mt-2" type="range" min="0" max="100" value="20"></label>
+<label class="block text-sm font-bold text-slate-700">Boats on duty: <span id="a4" class="mono text-blue-600">3</span><input id="boats" class="mt-2" type="range" min="0" max="10" value="3"></label>
+<p class="text-xs text-slate-500 border-t border-slate-200 pt-4">This never touches the live dashboard. It runs the same engine on a copy.</p></div>
+
+<div><div class="grid sm:grid-cols-3 gap-4 mb-5" id="cards"></div><div class="card p-2 shadow-md"><div id="map" class="rounded-xl overflow-hidden" style="height:54vh"></div></div>
+<div class="card p-6 mt-5 shadow-sm"><h2 class="font-bold text-lg text-blue-700 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Suggested pre-positioning</h2><ul id="notes" class="list-disc ml-5 text-sm mt-3 space-y-2 text-slate-800 font-bold"></ul></div></div></div>
+<p class="text-slate-500 text-xs mt-12 border-t border-slate-200 pt-6">Prototype for one simulated flood scenario. The data is simulated and the priority, timer and rescue gap logic is real.</p></section>
+
+<script>(async()=>{const m=await mkMap('map',{zoom:12});const ids=['level','rate','outage','cellular','boats'];let t;
+async function go(){
+    ids.forEach((k,i)=>$('#a'+(i+1)).textContent=$('#'+k).value);
+    
+    $('#cards').innerHTML=`<div class="col-span-3 card p-5 border-slate-200 bg-slate-50 text-center animate-pulse"><p class="text-slate-500 font-bold">Simulating permutations...</p></div>`;
+    $('#notes').innerHTML=`<li class="text-slate-400 font-medium animate-pulse">Calculating optimal staging routes...</li>`;
+
+    const d=await J('/api/rehearsal?'+ids.map(k=>`${k}=${$('#'+k).value}`).join('&'));
+    reset(m,['flood','gap','pins','units']);flood(m,d.zones);units(m,d.units);
+    d.rows.forEach(r=>{if(r.safe)return;if(r.gap<0){gapMark(m,r);L.marker([r.lat,r.lng],{icon:L.divIcon({className:'',html:'<div style="background:var(--coral-accent);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;font-weight:800;line-height:20px;font-size:13px;border:2px solid #ffffff;box-shadow:0 4px 6px rgba(0,0,0,0.1)">!</div>',iconSize:[24,24]})}).addTo(m.G.pins)}else pin(m,r)});
+    
+    $('#cards').innerHTML=`<div class="card p-5 border-slate-200 bg-white"><b class="text-5xl r">${d.before_gap}</b><p class="text-sm text-slate-600 font-medium mt-2">households in a rescue gap initially</p></div><div class="card p-5 border-slate-200 bg-white"><b class="text-5xl text-amber-600">${d.gap_households}</b><p class="text-sm text-slate-600 font-medium mt-2">after pre-positioning (${d.gap_people} people)</p></div><div class="card p-5 border-slate-200 bg-teal-50"><b class="text-5xl g">${d.recovered}</b><p class="text-sm text-teal-700 font-bold mt-2">households brought back inside their clock</p></div>`;
+    $('#notes').innerHTML=d.notes.map(n=>'<li>'+n+'</li>').join('');
+}
+ids.forEach(k=>$('#'+k).oninput=()=>{clearTimeout(t);t=setTimeout(go,120);ids.forEach((q,i)=>$('#a'+(i+1)).textContent=$('#'+q).value)});go()})()</script>{% endblock %}

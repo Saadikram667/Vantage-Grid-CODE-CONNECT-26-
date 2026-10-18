@@ -1,0 +1,111 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-5xl mx-auto px-5 py-12 md:py-16">
+    <div class="mb-10 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 border border-blue-100">
+            Algorithmic Architecture
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">How Vantage Grid Works</h1>
+        <p class="text-slate-600 mt-3 text-lg font-medium max-w-2xl leading-relaxed">The triage decision engine evaluates seven physical, demographic, and logistical constraints to rank rescue priority in real time.</p>
+    </div>
+
+    <div class="space-y-6">
+        <!-- 1. Survival Clock -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 font-black text-sm flex items-center justify-center">1</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Survival Clock (Tc) & Self-Protective Extension</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                The base survival clock calculates the minimum safe duration a household can endure before an unmitigated hazard breaches safe limits. It evaluates rising flood depth relative to terrain and floor height, medical dependency under power outage degradation, thermal limits, and water/food reserves. Action steps confirmed by residents on the Check-in page physically inject verified mitigation bonus minutes (B) directly into the base clock:
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-blue-700 overflow-x-auto font-bold">
+                Tc = max(5, min(T_flood, T_med, T_therm, T_sup, 2880)) + B
+            </div>
+        </div>
+
+        <!-- 2. Uncertainty & Comms Blackout -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 font-black text-sm flex items-center justify-center">2</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Uncertainty Dampening (k) & Cellular Grid Failure</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                Self-reported and verified households operate with high confidence (k = 1.0). Unknown or unregistered residences receive a shorter clock to pull them forward in the queue for early welfare checks (k = 0.5). If cellular network outages exceed 80%, the system assumes a total telecommunications collapse across the zone, automatically degrading k to 0.5 and applying an uncontactable penalty to ensure silent households are not left behind:
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-indigo-700 overflow-x-auto font-bold">
+                Tc_eff = Tc * (0.6 + 0.4 * k)     [where k = 1.0, 0.8, or 0.5]
+            </div>
+        </div>
+
+        <!-- 3. Severity & Need Probability -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 font-black text-sm flex items-center justify-center">3</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Severity Assessment (S) & Probability of Need (P)</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                Severity scales from 2 to 5 based on medical equipment dependence (oxygen/life support = 5, age 75+ = 4, chronic conditions = 3, healthy adults = 2), with an additional 0.5 applied to isolated individuals living alone. The probability of emergency need (P) increases when telemetry or check-in goes silent (+0.15), and collapses when marked safe (-0.40).
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-amber-800 overflow-x-auto font-bold">
+                P = clamp(0.4 + 0.5 * (Confidence/100) + P_silent - P_safe, 0.02, 1.0)
+            </div>
+        </div>
+
+        <!-- 4. Dynamic Priority Ranking -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 font-black text-sm flex items-center justify-center">4</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Priority Index Score</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                Queue position is ranked from highest to lowest index score. The priority index directly balances physiological vulnerability against time urgency:
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-teal-800 overflow-x-auto font-bold">
+                Priority = (P * S * 60) / max(Tc_eff, 10)
+            </div>
+        </div>
+
+        <!-- 5. Vehicle Logistics & Capacity Constraints -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-black text-sm flex items-center justify-center">5</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Fleet Dispatch & Passenger Capacities</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                Rescue assets are constrained by vehicle type, transit speed, water clearance limits, and strict passenger capacities (Boats: 6 people, Trucks: 15 people, Helo: 2 people). If picking up a household exceeds a unit's passenger capacity, the engine forces an offload detour to the nearest safe relief shelter (e.g., Civil Hospital, Expo Centre) before dispatching to the household, realistically expanding arrival ETA:
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-slate-700 overflow-x-auto font-bold">
+                ETA = T_free + T_detour_shelter + (Distance / V_unit * 60) + T_pickup
+            </div>
+        </div>
+
+        <!-- 6. Rescue Gap -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-orange-100 text-orange-600 font-black text-sm flex items-center justify-center">6</span>
+                <h2 class="font-extrabold text-xl text-slate-800">The Rescue Gap Index</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                A rescue gap occurs whenever a household's effective survival clock expires before the fastest compatible rescue crew can reach their coordinates. Negative values indicate catastrophic delay:
+            </p>
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mt-4 font-mono text-xs md:text-sm text-orange-700 overflow-x-auto font-bold">
+                Gap = Tc_eff - ETA
+            </div>
+            <p class="text-slate-500 text-xs mt-3">
+                Households in a rescue gap are highlighted in alert coral on the live queue and designated with warning beacons on the crisis map.
+            </p>
+        </div>
+
+        <!-- 7. Meteorological Calibration -->
+        <div class="card p-6 md:p-8 shadow-sm border border-slate-200 bg-white">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 font-black text-sm flex items-center justify-center">7</span>
+                <h2 class="font-extrabold text-xl text-slate-800">Meteorological Telemetry Ingestion</h2>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mt-2">
+                Live simulation feeds ingest atmospheric conditions (temperature, wind velocity, and ambient moisture) directly from Open-Meteo API sensors covering the Karachi coastal basin. The regional crisis index calibrates automatically to real-world storm intensity, while command staff maintain manual override capability for simulated scenario rehearsals.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

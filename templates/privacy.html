@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-4xl mx-auto px-5 py-12">
+    <div class="mb-10">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight pb-2">Data Privacy Protocol</h1>
+        <p class="text-slate-500 text-lg font-medium">How Vantage Grid handles and secures your sensitive data during emergencies.</p>
+    </div>
+
+    <div class="space-y-6">
+        <div class="card p-8 shadow-sm border border-slate-200 bg-white">
+            <h2 class="text-xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                1. Data Collection & Purpose
+            </h2>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">Vantage Grid collects specific household and medical data solely for the purpose of emergency triage and rescue routing. This includes:</p>
+            <ul class="list-disc pl-5 text-sm text-slate-600 space-y-1 mb-3">
+                <li>Geographical location (address, floor level, and neighborhood).</li>
+                <li>Demographics (number of occupants, ages over 75, individuals living alone).</li>
+                <li>Critical medical needs (reliance on oxygen, life support, or mobility constraints).</li>
+                <li>Contact information (emergency phone numbers).</li>
+            </ul>
+            <p class="text-slate-600 text-sm leading-relaxed">This data allows the command center to calculate accurate survival clocks and prioritize dispatch units to households in immediate danger.</p>
+        </div>
+
+        <div class="card p-8 shadow-sm border border-slate-200 bg-white">
+            <h2 class="text-xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                2. Data Anonymity & Security
+            </h2>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">To protect civilian identities, full names, exact addresses, and phone numbers are strictly firewalled. They are only visible to authenticated operators on the secure Dispatch Dashboard. They are never rendered on public maps or endpoints.</p>
+            <p class="text-slate-600 text-sm leading-relaxed">During the Check-In process, users are identified exclusively by their system-generated Household ID. The platform does not display a public registry of registered households.</p>
+        </div>
+
+        <div class="card p-8 shadow-sm border border-slate-200 bg-white">
+            <h2 class="text-xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                3. Data Retention & Deletion
+            </h2>
+            <p class="text-slate-600 text-sm leading-relaxed">Vantage Grid is an ephemeral crisis tool. All civilian registration data, medical markers, and check-in statuses are automatically purged from the regional databases 72 hours after the emergency declaration is lifted by the Regional Emergency Management Authority (REMA). Data is never sold, shared with third parties, or retained for non-emergency analytics.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-md mx-auto p-5 py-24">
+    <div class="card p-8 shadow-2xl shadow-slate-200/60 border border-slate-200 bg-white relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <div class="bg-blue-100 text-blue-800 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                <!-- Rebranded Vantage Grid Hex/V Inner Badge -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M6 8l6 6.5L18 8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            
+            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-2">Operator Gateway</h1>
+            <p class="text-slate-500 text-sm font-medium mb-8">Enter your security passcode to access live command center metrics, predictive triage, and scenario rehearsals.</p>
+            
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Authentication PIN</label>
+            <input id="pin" type="password" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner mb-2" placeholder="••••••••">
+            <p id="err" class="text-red-500 text-xs font-bold hidden mb-6">Passcode invalid or unauthorized.</p>
+            
+            <button id="submit" class="w-full bg-blue-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all mt-4">Authenticate</button>
+            <p class="text-center text-xs text-slate-400 font-medium mt-6">Beta Access Code: <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-mono text-slate-600">REMA2026</span></p>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('submit').onclick = async () => {
+    const p = document.getElementById('pin').value;
+    const res = await post('/api/login', {passcode: p});
+    if(res.ok) {
+        window.location.href = '/staff/dashboard';
+    } else {
+        document.getElementById('err').classList.remove('hidden');
+        document.getElementById('pin').classList.add('border-red-500');
+    }
+};
+</script>
+{% endblock %}

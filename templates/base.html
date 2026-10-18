@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vantage Grid</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght=500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8fafc; 
+  --card: #ffffff; 
+  --line: #e2e8f0; 
+  --text: #334155; 
+  --mut: #64748b; 
+  --blue-primary: #1e3a8a; 
+  --blue-light: #eff6ff; 
+  --teal-secondary: #0d9488; 
+  --teal-light: #f0fdfa; 
+  --coral-accent: #f97316; 
+}
+
+/* Hide scrollbars globally but keep scroll functionality */
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); letter-spacing: -.01em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.btn { background: var(--coral-accent); color: #ffffff; font-weight: 700; border-radius: 999px; padding: .6rem 1.3rem; transition: .15s; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3); }
+.btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+.btn2 { background: var(--blue-light); color: var(--blue-primary); font-weight: 600; border: 1px solid var(--blue-primary); border-radius: 999px; padding: .4rem 1rem; transition: .15s; }
+.btn2:hover { background: var(--blue-primary); color: #ffffff; }
+.pill { border-radius: 999px; padding: .4rem 1rem; font-weight: 600; font-size: .9rem; cursor: pointer; white-space: nowrap; transition: .15s; }
+.pill.on { background: var(--blue-primary); color: #ffffff; box-shadow: 0 2px 8px rgba(30,58,138,0.2); }
+.pill:not(.on) { color: var(--mut); }
+.pill:not(.on):hover { background: var(--line); color: var(--text); }
+.tog { background: var(--line); color: var(--mut); transition: .15s; }
+.tog.on { background: var(--teal-secondary); color: #ffffff; box-shadow: 0 2px 8px rgba(13,148,136,0.2); }
+input, select, textarea { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .6rem .8rem; width: 100%; color: var(--text); transition: .15s; }
+input:focus, select:focus { outline: none; border-color: var(--blue-primary); box-shadow: 0 0 0 3px var(--blue-light); }
+input[type=range] { padding: 0; accent-color: var(--blue-primary); border: 0; }
+input[type=checkbox] { width: auto; accent-color: var(--blue-primary); }
+
+.leaflet-container { background: #e2e8f0; border-radius: 14px; font-family: inherit; }
+.leaflet-tooltip { background: rgba(255,255,255,0.95); color: var(--text); border: 1px solid var(--line); font-weight: 700; font-size: 10px; padding: 2px 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); backdrop-filter: blur(4px); }
+.lbl { border-radius: 4px; padding: 1px 4px; font-size: 9px; font-weight: 800; white-space: nowrap; background: rgba(255,255,255,0.9); color: var(--blue-primary); border: 1px solid var(--blue-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.zl { font-size: 10px; font-weight: 800; color: var(--text); white-space: nowrap; text-shadow: 0 0 4px #ffffff, 0 0 8px #ffffff; }
+.gl { font-size: 9px; font-weight: 800; color: var(--coral-accent); white-space: nowrap; background: rgba(255,255,255,0.85); padding: 1px 4px; border-radius: 4px; border: 1px solid rgba(249, 115, 22, 0.3); }
+.pulse { animation: p 1.6s infinite; } @keyframes p { 50% { opacity: .4; } }
+
+.g { color: var(--teal-secondary); } 
+.a { color: #d97706; }               
+.r { color: var(--coral-accent); }   
+.mut { color: var(--mut); }
+.bar { height: 6px; border-radius: 9px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 9px; }
+</style></head>
+<body class="flex flex-col min-h-screen">
+
+<nav class="sticky top-0 z-[1000] backdrop-blur bg-white/90 border-b border-slate-200 shadow-sm">
+<div class="max-w-[1500px] mx-auto flex flex-wrap gap-2 items-center justify-between px-5 py-3">
+<a href="/" class="flex items-center gap-3">
+  <!-- 3D Logo Image -->
+  <img src="/static/logo.png" alt="Vantage Grid Logo" class="w-10 h-10 object-contain drop-shadow-md">
+  
+  <div class="flex flex-col items-start leading-none">
+    <span class="text-base md:text-lg font-black tracking-tight text-slate-900">VANTAGE GRID</span>
+    <span class="text-[8px] font-black tracking-widest text-blue-600 uppercase mt-0.5">Triage & Dispatch Systems</span>
+  </div>
+</a>
+<div class="flex flex-wrap gap-1 items-center">
+    {% for u,l in [("/","Home"),("/civilian/register","Register"),("/civilian/checkin","Check-in"),("/civilian/map","Crisis map")] %}
+    <a href="{{u}}" class="pill {{'on' if active==u}}">{{l}}</a>{% endfor %}
+    
+    <div class="w-px h-5 bg-slate-200 mx-2 hidden sm:block"></div>
+    {% if is_staff %}
+        <a href="/staff/dashboard" class="pill {{'on' if active=='/staff/dashboard'}} text-teal-600">Dashboard</a>
+        <a href="/staff/rehearsal" class="pill {{'on' if active=='/staff/rehearsal'}} text-teal-600">Rehearsal</a>
+        <a href="/api/logout" class="pill text-orange-500 hover:bg-orange-50 transition-colors">Logout</a>
+    {% else %}
+        <a href="/login" class="pill {{'on' if active=='/login'}} font-bold bg-slate-100 hover:bg-slate-200 text-slate-700">Staff Login</a>
+    {% endif %}
+</div></div></nav>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const fmt=m=>m>=1440?Math.floor(m/1440)+'d '+Math.floor(m%1440/60)+'h':m>=60?Math.floor(m/60)+'h '+String(Math.round(m%60)).padStart(2,'0')+'m':Math.max(0,Math.round(m))+'m';
+const col=m=>m<60?'r':m<240?'a':'g';
+const hex={r:'var(--coral-accent)', a:'#fbbf24', g:'var(--teal-secondary)'};
+const stageOf=v=>v<40?'Prepare':v<60?'Watch':v<80?'Warn':'Dispatch';
+const J=async(u,o)=>(await fetch(u,o)).json();
+const post=(u,b)=>J(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+
+async function mkMap(id,opt={}){
+ const C=await J('/api/context'),m=L.map(id,{zoomControl:true,attributionControl:true}).setView([24.88,67.03],opt.zoom||12);
+ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri'}).addTo(m);
+ m.C=C;m.G={};for(const k of ['flood','roads','land','water','air','gap','pins','units','static'])m.G[k]=L.layerGroup().addTo(m);
+ L.polyline(C.river,{color:'var(--blue-primary)',weight:14,opacity:.3,lineCap:'round'}).addTo(m.G.static);
+ C.roads.forEach(r=>L.polyline(r,{color:'#cbd5e1',weight:2}).addTo(m.G.static));
+ C.shelters.forEach(s=>L.marker([s[1],s[2]],{icon:L.divIcon({className:'',html:`<div class="lbl">⌂ ${s[0]}</div>`})}).addTo(m.G.static));
+ 
+ // Fixes the grey/half-missing tiles bug by forcing a redraw after CSS grid settles
+ setTimeout(() => m.invalidateSize(), 400);
+ 
+ return m
+}
+function reset(m,keys){keys.forEach(k=>m.G[k].clearLayers())}
+function flood(m,zones){for(const[n,p]of Object.entries(m.C.zones)){
+ L.circle(p,{radius:700+zones[n]*40,stroke:false,fillColor:'var(--blue-primary)',fillOpacity:Math.min(.3,.04+zones[n]/250)}).addTo(m.G.flood);
+ L.marker(p,{icon:L.divIcon({className:'',html:`<div class="zl">${n} ${zones[n]}%</div>`}),interactive:false}).addTo(m.G.flood)}}
+function pin(m,r,big){
+ const c = m.C.zones[r.zone] ? hex[col(r.tc_eff)] : 'var(--blue-primary)'; 
+ return L.circleMarker([r.lat,r.lng],{radius:big?8:5,color:'#ffffff',weight:1.5,fillColor:c,fillOpacity:1}).bindTooltip(`${r.name} · ${fmt(r.tc_eff)} left`).addTo(m.G.pins)
+}
+function units(m,us){us.forEach(u=>L.marker([u.lat,u.lng],{icon:L.divIcon({className:'',html:`<div class="lbl">${u.type=='boat'?'⛵':u.type=='air'?'🚁':'🚚'} ${u.id}</div>`})}).addTo(m.G.units))}
+function route(m,u,r){
+ const t=u.type=='boat'?'water':u.type=='air'?'air':'land',bad=r.gap<0;
+ L.polyline([[u.lat,u.lng],[r.lat,r.lng]],{color:bad?'var(--coral-accent)':t=='water'?'var(--blue-primary)':t=='air'?'#8b5cf6':'var(--teal-secondary)',weight:2,dashArray:t=='air'?'2 6':bad?'5 5':null}).addTo(m.G[t])
+}
+function gapMark(m,r){
+ L.circle([r.lat,r.lng],{radius:320,color:'var(--coral-accent)',weight:2,fillColor:'var(--coral-accent)',fillOpacity:.15,className:'pulse'}).addTo(m.G.gap);
+ L.marker([r.lat,r.lng],{icon:L.divIcon({className:'',html:`<div class="gl">gap −${fmt(-r.gap)}</div>`,iconAnchor:[-12,-6]}),interactive:false}).addTo(m.G.gap)
+}
+</script>
+
+<main class="flex-1 overflow-x-hidden">{% block body %}{% endblock %}</main>
+
+<footer class="border-t border-slate-200 bg-slate-50 py-3 mt-auto z-[500] relative">
+    <div class="max-w-[1500px] mx-auto px-5 flex flex-col lg:flex-row justify-between items-center gap-4">
+        
+        <!-- Left: Copyright (Updated to REMA) -->
+        <div class="flex items-center gap-2 text-slate-400">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="shrink-0 opacity-40">
+                <polygon points="12,2 22,6.5 22,17.5 12,22 2,17.5 2,6.5" fill="currentColor"/>
+            </svg>
+            <span class="text-[10px] font-bold tracking-wider uppercase">&copy; 2026 Vantage Grid Systems &middot; Regional Emergency Management Authority (REMA)</span>
+        </div>
+        
+        <!-- Center: Links -->
+        <div class="flex flex-wrap justify-center gap-6 text-xs font-bold text-slate-500">
+            <a href="/how" class="hover:text-blue-900 transition-colors">How it Works</a>
+            <a href="/about" class="hover:text-blue-900 transition-colors">About REMA</a>
+            <a href="/privacy" class="hover:text-blue-900 transition-colors">Data Privacy Protocol</a>
+        </div>
+
+        <!-- Right: Crimson Nova Developer Badge -->
+        <div class="flex items-center gap-3">
+            <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Developed by</span>
+            <div class="flex items-center gap-3 bg-[#0a0a0a] border border-slate-700 pr-4 pl-1.5 py-1.5 rounded-full shadow-sm hover:shadow-red-500/30 transition-all cursor-pointer">
+                <img src="/static/crimson_nova.png" alt="Crimson Nova" class="w-10 h-10 rounded-full object-cover border border-slate-800">
+                <span class="text-xs font-black tracking-widest uppercase" style="font-family: 'JetBrains Mono', monospace;">
+                    <span class="text-red-500">Crimson</span><span class="text-white">Nova</span>
+                </span>
+            </div>
+        </div>
+
+    </div>
+</footer>
+</body></html>
+
+</body></html>

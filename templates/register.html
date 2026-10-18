@@ -1,0 +1,200 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-xl mx-auto px-5 py-12">
+    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-800 pb-1">Register your household</h1>
+    <p class="text-slate-500 mb-8 mt-2 text-lg">Takes about a minute. Registered homes get a more accurate clock.</p>
+
+    <div class="flex gap-3 mb-8" id="dots">
+        <div class="h-2 flex-1 rounded-full bg-slate-200 overflow-hidden"><div class="h-full bg-blue-600 transition-all duration-500 w-full"></div></div>
+        <div class="h-2 flex-1 rounded-full bg-slate-200 overflow-hidden"><div class="h-full bg-blue-600 transition-all duration-500 w-0"></div></div>
+        <div class="h-2 flex-1 rounded-full bg-slate-200 overflow-hidden"><div class="h-full bg-blue-600 transition-all duration-500 w-0"></div></div>
+    </div>
+
+    <div class="card p-6 md:p-8 space-y-6 shadow-xl shadow-slate-200/50 border border-slate-200 relative overflow-hidden">
+        
+        <!-- Step 1: Home -->
+        <div class="step space-y-5 relative z-10">
+            <h2 class="font-bold text-2xl flex items-center gap-3 text-slate-800">
+                <span class="bg-blue-100 text-blue-600 rounded-lg p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></span>
+                Your home
+            </h2>
+            
+            <label class="block text-sm font-medium text-slate-600">Household name <span class="text-red-500 ml-2 font-bold err-txt" id="name-err"></span>
+                <input id="name" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all shadow-sm req-field" placeholder="e.g. Khan household" autocomplete="family-name">
+            </label>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="block text-sm font-medium text-slate-600">Neighbourhood
+                    <input id="zone" list="zone-list" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all shadow-sm" placeholder="Search...">
+                    <datalist id="zone-list">
+                        <option value="Lyari"></option>
+                        <option value="Saddar"></option>
+                        <option value="Liaquatabad"></option>
+                        <option value="Gulshan-e-Iqbal"></option>
+                    </datalist>
+                </label>
+                <label class="block text-sm font-medium text-slate-600">Floor (0 is ground)
+                    <input id="floor" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all shadow-sm" type="number" min="0" max="20" value="0" inputmode="numeric">
+                </label>
+            </div>
+            <label class="block text-sm font-medium text-slate-600">Full Address <span class="text-red-500 ml-2 font-bold err-txt" id="address-err"></span>
+                <input id="address" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all shadow-sm req-field" placeholder="Street, Apartment or Landmark">
+            </label>
+            <label class="block text-sm font-medium text-slate-600">Emergency Phone <span class="text-red-500 ml-2 font-bold err-txt" id="phone-err"></span>
+                <input id="phone" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-all shadow-sm req-field" placeholder="e.g. 0300 1234567" type="tel">
+            </label>
+        </div>
+
+        <!-- Step 2: People -->
+        <div class="step hidden space-y-5 relative z-10">
+            <h2 class="font-bold text-2xl flex items-center gap-3 text-slate-800">
+                <span class="bg-indigo-100 text-indigo-600 rounded-lg p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></span>
+                Who lives there
+            </h2>
+            <label class="block text-sm font-medium text-slate-600">Total number of people
+                <input id="people" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-all shadow-sm" type="number" min="1" max="20" value="1" inputmode="numeric">
+            </label>
+            <div id="people-container" class="space-y-3 mt-4 max-h-[40vh] overflow-y-auto pr-2"></div>
+        </div>
+
+        <!-- Step 3: Medical -->
+        <div class="step hidden space-y-5 relative z-10">
+            <h2 class="font-bold text-2xl flex items-center gap-3 text-slate-800">
+                <span class="bg-teal-100 text-teal-700 rounded-lg p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg></span>
+                Medical needs & devices
+            </h2>
+            <label class="flex gap-4 items-center card bg-white border-slate-300 p-4 cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:bg-teal-50 has-[:checked]:border-teal-500 has-[:checked]:ring-1 has-[:checked]:ring-teal-500">
+                <input type="checkbox" id="oxygen" class="w-5 h-5 rounded border-slate-300 bg-white text-teal-600 focus:ring-teal-500">
+                <span class="font-medium text-slate-700">Oxygen or powered life support</span>
+            </label>
+            <label class="block text-sm font-medium text-slate-600">Devices at home
+                <input id="devices" class="mt-2 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-all shadow-sm" placeholder="Phone, radio, oxygen concentrator">
+            </label>
+            
+            <!-- Privacy Consent Checkbox -->
+            <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                <label class="flex gap-3 items-start cursor-pointer">
+                    <input type="checkbox" id="consent" class="mt-0.5 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-xs text-slate-600 font-medium leading-relaxed block">
+                        I consent to the collection and processing of my household's medical and location data for the sole purpose of emergency triage and rescue routing. <span class="text-red-500 font-bold" id="consent-err"></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex justify-between pt-5 mt-2 relative z-10 border-t border-slate-200">
+            <button type="button" class="btn2 px-6 py-2.5 rounded-full" id="back">Back</button>
+            <button type="button" class="btn px-8 py-2.5 rounded-full" id="next">Next</button>
+        </div>
+        <p id="ok" class="g font-bold text-center mt-2 relative z-10" role="status"></p>
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    let i = 0;
+    const st = document.querySelectorAll('.step'), bars = document.querySelectorAll('#dots > div > div');
+    const pInput = document.getElementById('people'), pContainer = document.getElementById('people-container');
+    const backBtn = document.getElementById('back'), nextBtn = document.getElementById('next');
+
+    function buildPeople() {
+        if(!pInput || !pContainer) return;
+        let n = parseInt(pInput.value) || 1;
+        if(n > 20) n = 20; if(n < 1) n = 1;
+        pContainer.innerHTML = '';
+        for(let j=1; j<=n; j++) {
+            pContainer.innerHTML += `
+            <div class="card p-4 border border-slate-200 bg-slate-50">
+                <span class="font-bold text-indigo-600 text-sm mb-2 block">Person ${j}</span>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="block text-xs font-medium text-slate-600">Age
+                        <input type="number" class="p-age mt-1.5 w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 shadow-sm" min="0" max="120">
+                    </label>
+                    <div class="flex flex-col justify-end pb-2">
+                        <label class="flex gap-2 items-center cursor-pointer">
+                            <input type="checkbox" class="p-mob w-4 h-4 rounded border-slate-300 bg-white text-indigo-600 focus:ring-indigo-600">
+                            <span class="text-xs font-medium text-slate-700">Limited mobility</span>
+                        </label>
+                    </div>
+                </div>
+            </div>`;
+        }
+    }
+    if(pInput) { pInput.addEventListener('input', buildPeople); buildPeople(); }
+
+    function show(){
+        st.forEach((e, k) => e.classList.toggle('hidden', k != i));
+        bars.forEach((b, k) => { b.style.width = k <= i ? '100%' : '0' });
+        if(backBtn) backBtn.style.visibility = i ? 'visible' : 'hidden';
+        if(nextBtn) nextBtn.textContent = i == 2 ? 'Save registration' : 'Next';
+    }
+
+    if(backBtn) backBtn.addEventListener('click', () => { i--; show(); });
+
+    if(nextBtn) {
+        nextBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); 
+            
+            // Step 1 Validation
+            if (i == 0) {
+                let valid = true;
+                ['name', 'address', 'phone'].forEach(field => {
+                    const el = document.getElementById(field);
+                    const err = document.getElementById(field + '-err');
+                    if (!el.value.trim()) {
+                        el.classList.add('border-red-500');
+                        if (err) err.textContent = "(Required)";
+                        valid = false;
+                    } else {
+                        el.classList.remove('border-red-500');
+                        if (err) err.textContent = "";
+                    }
+                });
+                if (!valid) return;
+            }
+
+            // Step 3 Validation (Consent)
+            if(i == 2 && !document.getElementById('consent').checked) {
+                document.getElementById('consent-err').textContent = " (Consent required to proceed)";
+                return;
+            } else if (i == 2) {
+                document.getElementById('consent-err').textContent = "";
+            }
+            
+            if(i < 2){ i++; show(); return; }
+            
+            try {
+                nextBtn.disabled = true;
+                nextBtn.textContent = "Saving...";
+
+                const nPeople = parseInt(pInput.value) || 1;
+                const ageInputs = Array.from(document.querySelectorAll('.p-age'));
+                const mobInputs = Array.from(document.querySelectorAll('.p-mob'));
+                
+                const r = await post('/api/register', {
+                    name: document.getElementById('name').value,
+                    zone: document.getElementById('zone').value || 'Lyari', // <-- Changed here
+                    address: document.getElementById('address').value,
+                    phone: document.getElementById('phone').value,
+                    floor: parseInt(document.getElementById('floor').value) || 0,
+                    people: nPeople,
+                    alone: nPeople === 1,
+                    elderly: ageInputs.some(el => (parseInt(el.value) || 0) >= 75),
+                    oxygen: document.getElementById('oxygen').checked,
+                    mobility: mobInputs.some(el => el.checked),
+                    devices: document.getElementById('devices').value
+                });
+                
+                nextBtn.style.display = 'none';
+                backBtn.style.display = 'none';
+                document.getElementById('ok').innerHTML = `<div class="bg-teal-50 text-teal-800 p-4 rounded-xl border border-teal-200 flex flex-col items-center gap-2 mt-4"><svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Registered! Your Household ID is <b class="text-teal-900">${r.id}</b>. Save this number.</span><a class="mt-2 btn w-full text-center" href="/civilian/checkin">Go to Check In</a></div>`;
+
+            } catch(err) {
+                console.error(err);
+                nextBtn.disabled = false;
+                nextBtn.textContent = "Error saving. Try again.";
+            }
+        });
+    }
+    show();
+});
+</script>
+{% endblock %}

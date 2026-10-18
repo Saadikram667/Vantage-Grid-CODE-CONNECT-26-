@@ -1,0 +1,221 @@
+{% extends "base.html" %}{% block body %}
+<section class="max-w-[1500px] mx-auto p-4 md:p-6 lg:py-8">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+                </span>
+                <span class="text-[11px] font-bold text-teal-600 uppercase tracking-widest">Live Telemetry Active</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Crisis Overview</h1>
+        </div>
+        
+        <div class="flex flex-wrap gap-3 text-sm">
+            <div class="bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm flex items-center gap-2.5 font-medium text-slate-600">
+                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span><b class="text-lg text-slate-800" id="stat-units">0</b> Units Deployed</span>
+            </div>
+            <div class="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl shadow-sm flex items-center gap-2.5 font-medium text-orange-800">
+                <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <span><b class="text-lg text-orange-900" id="stat-flooded">0</b> Homes Flooded</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid xl:grid-cols-[1fr_380px] gap-6">
+        
+        <div class="relative rounded-2xl shadow-sm border border-slate-200 bg-white p-1.5 flex flex-col h-[65vh] min-h-[500px]">
+            <div id="map" class="rounded-xl overflow-hidden z-10 w-full flex-1"></div>
+            
+            <div class="absolute bottom-5 left-5 z-[400] bg-white/90 backdrop-blur border border-slate-200/80 p-4 rounded-xl shadow-md pointer-events-none">
+                <div class="font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-[10px]">Map Legend</div>
+                <div class="space-y-2 text-xs font-semibold text-slate-600">
+                    <div class="flex items-center gap-2.5"><div class="w-3 h-3 rounded-full bg-blue-500 opacity-40"></div>Flood Zone</div>
+                    <div class="flex items-center gap-2.5"><div class="w-3 h-3 rounded-full bg-orange-500 border-2 border-white shadow-sm"></div>Critical Home</div>
+                    <div class="flex items-center gap-2.5"><div class="w-3 h-3 bg-white border-[2.5px] border-blue-500 rounded-sm shadow-sm"></div>Safe Shelter</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-5">
+            
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group shrink-0">
+                <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                
+                <div class="flex justify-between items-end mb-4 pl-1">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Simulation Control</label>
+                        <span class="font-bold text-slate-800 text-sm">Global Crisis Level</span>
+                    </div>
+                    <div class="text-right">
+                        <b id="lv" class="text-3xl font-black text-blue-600 tracking-tight">45</b><span class="text-blue-600 font-bold text-base">%</span>
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full pl-1">
+                    <div class="flex items-center gap-1 mb-2 bg-slate-100 p-1 rounded-lg w-fit border border-slate-200">
+                        <button id="src-man" class="text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all bg-white text-orange-600 shadow-sm border border-slate-200 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Override</button>
+                        <button id="src-live" class="text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all text-slate-500 hover:text-slate-800">Live API</button>
+                    </div>
+                    
+                    <div class="relative pt-1 w-full">
+                        <input id="s" type="range" min="30" max="95" value="30" class="w-full h-2.5 md:h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-100 shadow-inner hover:bg-slate-200 transition-all">
+                        <div class="flex justify-between text-[8px] md:text-[10px] font-extrabold text-slate-400 mt-2 uppercase tracking-widest px-1">
+                            <span id="src-msg" class="text-slate-400 truncate">Slider Unlocked: 30 (Prepare) &rarr; 80 (Dispatch)</span>
+                        </div>
+                    </div>
+                    
+                    <div id="live-metrics" class="hidden mt-3 bg-teal-50 border border-teal-200 rounded-xl p-3 shadow-sm transition-all w-full">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[9px] font-extrabold text-teal-700 uppercase tracking-widest">Active Data Feed</span>
+                            <span class="text-[9px] font-extrabold text-teal-600 uppercase flex items-center gap-1"><div class="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></div>Connected</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-white rounded-lg p-2 text-center border border-teal-100 shadow-sm">
+                                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Location</div>
+                                <div id="live-loc" class="text-xs font-black text-slate-700">--</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-2 text-center border border-teal-100 shadow-sm">
+                                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Temp</div>
+                                <div id="live-temp" class="text-xs font-black text-slate-700">--</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-2 text-center border border-teal-100 shadow-sm">
+                                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Source</div>
+                                <div id="live-src" class="text-xs font-black text-blue-600 truncate">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 shrink-0">Regional Telemetry</h3>
+                <div id="zl" class="space-y-2.5 flex-1 overflow-y-auto pr-1.5"></div>
+            </div>
+
+            <div class="bg-slate-800 p-5 border border-slate-700 shadow-md rounded-2xl overflow-hidden relative shrink-0">
+                <div class="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 bg-orange-500/20 blur-xl rounded-full pointer-events-none"></div>
+                <div class="relative z-10 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-bold text-white text-sm flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Need immediate help?
+                        </h3>
+                        <p class="text-xs text-slate-400 font-medium mt-1">Update your status to re-route crews.</p>
+                    </div>
+                    <a href="/civilian/checkin" class="shrink-0 bg-white text-slate-900 hover:bg-slate-100 font-bold py-2 px-4 text-sm rounded-lg transition-all shadow-sm">Check in</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+/* Clean scrollbar overrides specifically for the telemetry list */
+#zl::-webkit-scrollbar { display: none; }
+#zl { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<script>
+(async () => {
+    const m = await mkMap('map');
+
+    async function draw() {
+        const lv = $('#s').value;
+        $('#lv').textContent = lv;
+        const d = await J('/api/state?level=' + lv + '&cellular=0'); // Pass cellular=0 as default for map
+        
+        reset(m, ['flood', 'units', 'pins']);
+        flood(m, d.zones);
+        units(m, d.units);
+        
+        $('#stat-units').textContent = d.units.length;
+        $('#stat-flooded').textContent = d.rows.filter(r => r.flooded).length;
+
+        d.rows.filter(r => r.flooded).forEach(r => 
+            L.circleMarker([r.lat, r.lng], {
+                radius: 5, 
+                color: '#ffffff', 
+                weight: 2, 
+                fillColor: 'var(--coral-accent)', 
+                fillOpacity: 1
+            }).bindTooltip('Flooded area').addTo(m.G.pins)
+        );
+
+        $('#zl').innerHTML = Object.entries(d.zones).map(([z, v]) => {
+            const isDanger = v >= 80;
+            const isWarn = v >= 60 && v < 80;
+            
+            const c = isDanger 
+                ? { text: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200', bar: 'var(--coral-accent)', pulse: '<span class="absolute top-0 right-0 -mt-1 -mr-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500 border border-white"></span></span>' }
+                : isWarn 
+                ? { text: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', bar: '#f59e0b', pulse: '' }
+                : { text: 'text-blue-700', bg: 'bg-blue-50', border: 'border-slate-200', bar: 'var(--blue-primary)', pulse: '' };
+
+            return `
+            <div class="relative bg-slate-50 hover:bg-white border ${c.border} rounded-xl p-3.5 transition-all hover:shadow-sm">
+                ${c.pulse}
+                <div class="flex justify-between items-center mb-2.5">
+                    <span class="font-semibold text-slate-800 text-sm">${z}</span>
+                    <span class="mono font-bold ${c.text} ${c.bg} px-2 py-0.5 rounded-md border ${c.border} text-xs shadow-sm">${v}%</span>
+                </div>
+                <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                    <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${v}%; background: ${c.bar}"></div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // Data Source Toggle
+    $('#src-live').onclick = async () => {
+        $('#src-live').className = 'text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all bg-white text-blue-600 shadow-sm border border-slate-200 flex items-center gap-1.5';
+        $('#src-live').innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span> Live API';
+        $('#src-man').className = 'text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all text-slate-500 hover:text-slate-800';
+        $('#s').disabled = true;
+        $('#s').classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-200');
+        $('#s').classList.remove('cursor-pointer', 'hover:bg-slate-200');
+        
+        $('#src-msg').innerHTML = 'Connecting to external weather satellites...';
+        $('#src-msg').className = 'text-teal-600 truncate';
+        $('#live-metrics').classList.remove('hidden');
+        
+        try {
+            const tel = await J('/api/telemetry');
+            if(tel.ok) {
+                $('#live-loc').textContent = tel.location;
+                $('#live-temp').textContent = tel.temperature + '°C';
+                $('#live-src').textContent = tel.source;
+                $('#s').value = tel.calculated_level;
+                $('#src-msg').innerHTML = `Auto-calibrated to ${tel.calculated_level}% based on live conditions.`;
+                if(typeof draw === 'function') draw();
+            } else {
+                $('#src-msg').innerHTML = 'Live API Error. Using fallback data.';
+            }
+        } catch(e) {
+            $('#src-msg').innerHTML = 'Connection failed. Check network.';
+        }
+    };
+
+    $('#src-man').onclick = () => {
+        $('#src-man').className = 'text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all bg-white text-orange-600 shadow-sm border border-slate-200 flex items-center gap-1.5';
+        $('#src-man').innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Override';
+        $('#src-live').className = 'text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-md transition-all text-slate-500 hover:text-slate-800';
+        $('#src-live').innerHTML = 'Live API';
+        $('#s').disabled = false;
+        $('#s').classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-200');
+        $('#s').classList.add('cursor-pointer', 'hover:bg-slate-200');
+        
+        $('#src-msg').innerHTML = 'Slider Unlocked: 30 (Prepare) &rarr; 80 (Dispatch)';
+        $('#src-msg').className = 'text-slate-400 truncate';
+        $('#live-metrics').classList.add('hidden');
+    };
+
+    $('#s').addEventListener('input', draw);
+    draw();
+})();
+</script>
+{% endblock %}
